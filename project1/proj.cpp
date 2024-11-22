@@ -52,15 +52,15 @@ int main() {
 
     // Operations Matrix
     vector<vector<int>> cypher(matrix_size, vector<int>(matrix_size));
-    for (auto row : cypher) {
-        for (auto col : row) {
+    for (auto &row : cypher) {
+        for (auto &col : row) {
             cin >> col;
         }
     }
 
     // Equation values
     vector<int> equation(num);
-    for (auto value : equation) {
+    for (auto &value : equation) {
         cin >> value;
     }
 

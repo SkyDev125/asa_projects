@@ -8,6 +8,7 @@ TESTDIR = $(CURDIR)/tests
 SRC = $(wildcard $(CURDIR)/*.cpp)
 TEST_INPUTS = $(wildcard $(TESTDIR)/*.in)
 TEST_OUTPUTS = $(wildcard $(TESTDIR)/*.out)
+TOTAL_ERRORS = 
 
 # Targets
 FILENAME = proj
@@ -31,18 +32,34 @@ inter: $(TARGET) inter-valgrind inter-gprof lizard
 
 # Test rule
 test: $(TESTDIR) $(TEST_INPUTS) $(TEST_OUTPUTS) $(TARGET)
-	@for file in $(TEST_INPUTS); do \
+	@TOTAL_ERRORS=""; \
+	for file in $(TEST_INPUTS); do \
 		echo "Running test $$file"; \
 		$(TARGET) < $$file > $${file%.in}.outme; \
-		diff -q $${file%.in}.outme $${file%.in}.out; \
-	done
+		if ! diff -q $${file%.in}.outme $${file%.in}.out; then \
+			TOTAL_ERRORS="$$TOTAL_ERRORS $$file"; \
+		fi; \
+	done; \
+	if [ -n "$$TOTAL_ERRORS" ]; then \
+		echo "Tests failed for the following files: $$TOTAL_ERRORS"; \
+	else \
+		echo "All tests passed"; \
+	fi
 
+# Clean rule
+clean:
+	rm -rf $(OUTDIR)
+	rm -rf $(REPORTDIR)
+
+
+# Ensure the tests directory exists
 $(TESTDIR):
 	@if [ ! -d "$(TESTDIR)" ]; then \
 		echo "The tests directory does not exist"; \
 		exit 1; \
 	fi
 
+# Ensure the input and output files exist
 $(TEST_INPUTS):
 	@if [ -z "$(TEST_INPUTS)" ]; then \
 		echo "No .in files found in $(TESTDIR)"; \
@@ -64,7 +81,7 @@ $(REPORTDIR):
 	mkdir -p $(REPORTDIR)
 
 # Compile and run checkers
-$(TARGET): $(OUTDIR)
+$(TARGET): $(OUTDIR) $(SRC)
 	$(CC) $(CCLAGS) -o $(TARGET) $(SRC)
 
 # Compile and run debug
@@ -95,7 +112,5 @@ inter-gprof: $(DEBUGTARGET) $(REPORTDIR)
 lizard: $(REPORTDIR)
 	lizard $(LIZFLAGS) $(SRC)
 
-# Clean rule
-clean:
-	rm -rf $(OUTDIR)
-	rm -rf $(REPORTDIR)
+# Phony rules
+.PHONY: all inter test clean valgrind inter-valgrind gprof inter-gprof lizard
