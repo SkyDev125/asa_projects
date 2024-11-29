@@ -26,7 +26,7 @@ LIZFLAGS = -l cpp -Eduplicate -a 5 -C 10 -L 1000 -a 5 -E NS -t 4 -o $(REPORTDIR)
 HYPERFLAGS = -N --command-name "Benchmark 1" --runs 100 2>/dev/null
 
 # Default rule
-all: $(TARGET) valgrind gprof lizard
+all: $(TARGET)
 
 # interactive rule
 inter: $(TARGET) inter-valgrind inter-gprof lizard
