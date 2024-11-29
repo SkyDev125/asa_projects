@@ -41,39 +41,35 @@ void printTable(const vector<vector<vector<pair<int, int>>>> &table) {
 }
 
 // verify if value exists in vector
-bool existsInVector(const vector<pair<int, int>> &vec, int key) {
-    return find_if(vec.begin(), vec.end(), [key](const pair<int, int> &p) {
-               return p.first == key;
-           }) != vec.end();
+pair<int, int> existsInVector(const vector<pair<int, int>> &vec, int key) {
+    auto p = find_if(vec.begin(), vec.end(),
+                     [key](const pair<int, int> &p) { return p.first == key; });
+    return p != vec.end() ? make_pair(p->first, p->second) : make_pair(-1, -1);
 }
 
 // Reconstruct the solution from the matrix
 string parenthisise(vector<vector<vector<pair<int, int>>>> &matrix,
-                    vector<vector<int>> &cypher, int row, int col, int sol) {
+                    vector<vector<int>> &cypher, int row, int col,
+                    pair<int, int> pair) {
     if (row == col) {
-        return to_string(sol);
+        return to_string(pair.first);
     }
-    for (auto &pair : matrix[row][col]) {
-        if (pair.first == sol) {
-            auto left = matrix[row][pair.second];
-            auto right = matrix[pair.second + 1][col];
+    auto left = matrix[row][pair.second];
+    auto right = matrix[pair.second + 1][col];
 
-            for (auto &value_l : left) {
-                for (auto &value_r : right) {
-                    if (cypher[value_l.first - 1][value_r.first - 1] == sol) {
-                        return "(" +
-                               parenthisise(matrix, cypher, row, pair.second,
-                                            value_l.first) +
-                               " " +
-                               parenthisise(matrix, cypher, pair.second + 1,
-                                            col, value_r.first) +
-                               ")";
-                    }
-                }
+    for (auto &value_l : left) {
+        for (auto &value_r : right) {
+            if (cypher[value_l.first - 1][value_r.first - 1] == pair.first) {
+                return "(" +
+                       parenthisise(matrix, cypher, row, pair.second, value_l) +
+                       " " +
+                       parenthisise(matrix, cypher, pair.second + 1, col,
+                                    value_r) +
+                       ")";
             }
         }
     }
-    return "No Solution";
+    return "Something Went Wrong";
 }
 
 string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
@@ -103,7 +99,8 @@ string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
                         // check if value already in matrix
                         int value =
                             cypher[value_l.first - 1][value_r.first - 1];
-                        if (existsInVector(matrix[row][col], value)) {
+                        if (existsInVector(matrix[row][col], value) !=
+                            pair<int, int>(-1, -1)) {
                             continue;
                         }
 
@@ -125,7 +122,7 @@ string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
         }
     }
 
-    // // Print cypher
+    // Print cypher
     // cout << "<================= Operation Table ==================>" << endl;
     // printTable(cypher);
 
@@ -142,9 +139,11 @@ string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
     // cout << solution << endl;
 
     ostringstream str;
-    if (existsInVector(matrix[0][equation_size - 1], solution)) {
+    pair<int, int> result =
+        existsInVector(matrix[0][equation_size - 1], solution);
+    if (result != pair<int, int>(-1, -1)) {
         return "1\n" +
-               parenthisise(matrix, cypher, 0, equation_size - 1, solution);
+               parenthisise(matrix, cypher, 0, equation_size - 1, result);
     } else {
         return "0";
     }
