@@ -75,6 +75,7 @@ string parenthisise(vector<vector<vector<pair<int, int>>>> &matrix,
 string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
                int &solution) {
     int equation_size = equation.size();
+    int cypher_size = cypher.size();
     vector<vector<vector<pair<int, int>>>> matrix(
         equation_size, vector<vector<pair<int, int>>>(equation_size));
 
@@ -87,7 +88,7 @@ string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
     for (int i = 1; i < equation_size; i++) {
         for (int row = 0, col = i; col < equation_size; row++, col++) {
             // Max limit of values to find in this cell
-            int n = i;
+            int n = i > cypher_size ? cypher_size : i;
 
             // find values for all K's
             for (int k = col - 1; k >= row; k--) {
