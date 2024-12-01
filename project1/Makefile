@@ -23,7 +23,7 @@ CCLAGS = -std=c++11 -O3 -Wall
 VALFLAGS = --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=$(REPORTDIR)/valgrind.log
 GPROFFLAGS = gmon.out -b -p -q -A > $(REPORTDIR)/gprof.log
 LIZFLAGS = -l cpp -Eduplicate -a 5 -C 10 -L 1000 -a 5 -E NS -t 4 -o $(REPORTDIR)/lizard.html
-HYPERFLAGS = -N --command-name "Benchmark 1" --runs 1000 2>/dev/null
+HYPERFLAGS = -N --command-name "Benchmark 1" --runs 100 2>/dev/null
 
 # Default rule
 all: $(TARGET)

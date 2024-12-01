@@ -88,7 +88,7 @@ string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
     for (int i = 1; i < equation_size; i++) {
         for (int row = 0, col = i; col < equation_size; row++, col++) {
             // Max limit of values to find in this cell
-            int n = i > cypher_size ? cypher_size : i;
+            int n = cypher_size;
 
             // find values for all K's
             for (int k = col - 1; k >= row; k--) {
@@ -123,7 +123,7 @@ string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
         }
     }
 
-    // Print cypher
+    // // Print cypher
     // cout << "<================= Operation Table ==================>" << endl;
     // printTable(cypher);
 
