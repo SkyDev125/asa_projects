@@ -40,13 +40,6 @@ void printTable(const vector<vector<vector<pair<int, int>>>> &table) {
     }
 }
 
-// verify if value exists in vector
-pair<int, int> existsInVector(const vector<pair<int, int>> &vec, int key) {
-    auto p = find_if(vec.begin(), vec.end(),
-                     [key](const pair<int, int> &p) { return p.first == key; });
-    return p != vec.end() ? make_pair(p->first, p->second) : make_pair(-1, -1);
-}
-
 // Reconstruct the solution from the matrix
 string parenthisise(vector<vector<vector<pair<int, int>>>> &matrix,
                     vector<vector<int>> &cypher, int row, int col,
@@ -89,6 +82,7 @@ string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
         for (int row = 0, col = i; col < equation_size; row++, col++) {
             // Max limit of values to find in this cell
             int n = cypher_size;
+            vector<bool> checker(cypher_size, false);
 
             // find values for all K's
             for (int k = col - 1; k >= row; k--) {
@@ -100,13 +94,13 @@ string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
                         // check if value already in matrix
                         int value =
                             cypher[value_l.first - 1][value_r.first - 1];
-                        if (existsInVector(matrix[row][col], value) !=
-                            pair<int, int>(-1, -1)) {
+                        if (checker[value]) {
                             continue;
                         }
 
                         // Add value to matrix
                         matrix[row][col].push_back(make_pair(value, k));
+                        checker[value] = true;
                         n--;
 
                         // Verify if we have found all possible values for
