@@ -64,8 +64,7 @@ string parenthisise(vector<vector<vector<tuple<int, int, int, int>>>> &matrix,
     auto right = matrix[k + 1][col];
 
     return "(" +
-           parenthisise(matrix, row, k,
-                        existsInVector(left, get<2>(tuple))) +
+           parenthisise(matrix, row, k, existsInVector(left, get<2>(tuple))) +
            " " +
            parenthisise(matrix, k + 1, col,
                         existsInVector(right, get<3>(tuple))) +
@@ -143,8 +142,7 @@ string decrypt(vector<vector<int>> &cypher, vector<int> &equation,
 
     auto result = existsInVector(matrix[0][equation_size - 1], solution);
     if (result != make_tuple(-1, -1, -1, -1)) {
-        return "1\n" +
-               parenthisise(matrix, 0, equation_size - 1, result);
+        return "1\n" + parenthisise(matrix, 0, equation_size - 1, result);
     } else {
         return "0";
     }

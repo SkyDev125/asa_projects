@@ -3,11 +3,13 @@ CURDIR := $(shell pwd)
 OUTDIR = $(CURDIR)/out
 REPORTDIR = $(CURDIR)/report
 TESTDIR = $(CURDIR)/tests
+STRESSDIR = $(CURDIR)/stress_tests
 
 # Source Files
 SRC = $(wildcard $(CURDIR)/*.cpp)
 TEST_INPUTS = $(wildcard $(TESTDIR)/*.in)
 TEST_OUTPUTS = $(wildcard $(TESTDIR)/*.out)
+STRESS_INPUTS = $(wildcard $(STRESSDIR)/**/*.in)
 TOTAL_ERRORS = 
 
 # Targets
@@ -16,6 +18,7 @@ TARGET = $(OUTDIR)/$(FILENAME).out
 DEBUGTARGET = $(OUTDIR)/$(FILENAME).debug
 INPUT_FILE = $(CURDIR)/$(FILENAME).in
 TEST_OUT_EXT = .outme
+STRESSTEST_EXT = .analysis.json
 
 # Compiler and flags
 CC = g++
@@ -72,12 +75,18 @@ test: clean $(TESTDIR) $(TEST_INPUTS) $(TEST_OUTPUTS) $(TARGET)
 	fi; \
 	echo "<================ $$PASSED_COUNT/$$(($$PASSED_COUNT + $$FAILED_COUNT)) tests - $$(expr $$PASSED_COUNT \* 100 \/ \( $$PASSED_COUNT + $$FAILED_COUNT \))% =================>"; \
 
+stresstest: clean $(STRESSDIR) $(STRESS_INPUTS) $(TARGET)
+	@for file in $(STRESS_INPUTS); do \
+		hyperfine -N --command-name "Benchmarking $$file" --runs 1000 --input $$file --export-json $${file%.in}$(STRESSTEST_EXT) $(TARGET); \
+		done; \
+
 # Clean rule
 clean:
 	@rm -rf $(OUTDIR)
 	@rm -rf $(REPORTDIR)
 	@rm -f $(TESTDIR)/*.outme
 	@rm -f $(TESTDIR)/*.diff
+	@rm -f $(STRESSDIR)/**/*$(STRESSTEST_EXT)
 
 # Ensure the tests directory exists
 $(TESTDIR):
