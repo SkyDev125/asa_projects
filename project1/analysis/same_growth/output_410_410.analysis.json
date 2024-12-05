@@ -1,0 +1,38 @@
+{
+  "results": [
+    {
+      "command": "Benchmarking /mnt/d/projects/university/2nd_year/1st_sem/asa/asa_projects/project1/stress_tests/same_growth/output_410_410.in",
+      "mean": 1.6628098506,
+      "stddev": 0.04387522961667023,
+      "median": 1.653618718,
+      "user": 1.4234895,
+      "system": 0.2202588,
+      "min": 1.59444433,
+      "max": 1.739356087,
+      "times": [
+        1.70565812,
+        1.662684938,
+        1.692523419,
+        1.630276426,
+        1.644552498,
+        1.6398158070000002,
+        1.739356087,
+        1.692023495,
+        1.626763386,
+        1.59444433
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

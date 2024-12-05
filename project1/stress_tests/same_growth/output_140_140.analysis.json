@@ -1,0 +1,20 @@
+{
+  "results": [
+    {
+      "command": "Benchmarking /mnt/d/projects/university/2nd_year/1st_sem/asa/asa_projects/project1/stress_tests/same_growth/output_140_140.in",
+      "mean": 0.057543814000000006,
+      "stddev": null,
+      "median": 0.057543814000000006,
+      "user": 0.042654,
+      "system": 0.010662999999999999,
+      "min": 0.057543814000000006,
+      "max": 0.057543814000000006,
+      "times": [
+        0.057543814000000006
+      ],
+      "exit_codes": [
+        0
+      ]
+    }
+  ]
+}

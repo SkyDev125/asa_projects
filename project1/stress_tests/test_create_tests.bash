@@ -2,12 +2,10 @@
 
 #!/bin/bash
 
-# Loop through table sizes from 1 to 1000
-# Loop through sequence sizes from 1 to 1000
-mkdir cube_squared_growth
-for sequence_size in {1..10}; do
-    table_size=$((sequence_size ** 2))
-    seq_size=$((sequence_size ** 3))
-    # Call the generator script with the current table size and sequence size
-    /workspace/university/2nd_year/1st_sem/asa/asa_projects/project1/stress_tests/generator $table_size $seq_size >cube_squared_growth/output_${table_size}_${seq_size}.in
+# Create directories
+mkdir -p same_growth
+
+# Create tests 1_1, 10_10, 20_20, 30_30 until 1000_1000
+for size in {10..1000..10}; do
+    /workspace/university/2nd_year/1st_sem/asa/asa_projects/project1/stress_tests/a.out $size $size >same_growth/output_${size}_${size}.in
 done

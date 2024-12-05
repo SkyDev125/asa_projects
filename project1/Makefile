@@ -77,7 +77,7 @@ test: clean $(TESTDIR) $(TEST_INPUTS) $(TEST_OUTPUTS) $(TARGET)
 
 stresstest: clean $(STRESSDIR) $(STRESS_INPUTS) $(TARGET)
 	@for file in $(STRESS_INPUTS); do \
-		hyperfine -N --command-name "Benchmarking $$file" --runs 1000 --input $$file --export-json $${file%.in}$(STRESSTEST_EXT) $(TARGET); \
+		hyperfine -N --command-name "Benchmarking $$file" --runs 10 --input $$file --export-json $${file%.in}$(STRESSTEST_EXT) $(TARGET); \
 		done; \
 
 # Clean rule
