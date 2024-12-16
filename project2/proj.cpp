@@ -135,6 +135,10 @@ int metro_connectivity(vector<vector<pair<int, int>>> &graph, int starting_node)
         int line = get<2>(current);
         pq.pop();
 
+        if(line_visited[node][line]){
+            continue;
+        }
+
         line_visited[node][line] = true;
 
         // Add the next nodes to the queue
