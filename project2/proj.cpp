@@ -59,6 +59,7 @@ void print_graph(const vector<set<int>> &graph) {
     cout << endl;
 }
 
+
 // Print the queue
 void print_queue(const vector<pair<int, int>> &queue) {
     cout << "Queue: ";
@@ -68,14 +69,23 @@ void print_queue(const vector<pair<int, int>> &queue) {
     cout << endl;
 }
 
-bool is_redundant_line(int line) {
+void remove_redundant_lines() {
     for (int i = stations; i < stations + lines; i++) {
-        if (i == line) continue;
-        if (includes(graph[i].begin(), graph[i].end(), graph[line].begin(), graph[line].end())) {
-            return true;
+        bool redundant = false;
+        for (int j = stations; j < stations + lines; j++) {
+            if (i == j) continue;
+            if (includes(graph[j].begin(), graph[j].end(), graph[i].begin(), graph[i].end())) {
+                redundant = true;
+                break;
+            }
+        }
+        if (redundant) {
+            for (auto &node : graph[i]) {
+                graph[node].erase(i);
+            }
+            graph[i].clear();
         }
     }
-    return false;
 }
 
 int metro_connectivity(int starting_node) {
@@ -161,10 +171,18 @@ int main() {
 
     //print_graph(graph);
 
+    // Remove redundant lines
+    remove_redundant_lines();
+
+    //print_graph(graph);
+
     int max_changes = -1;
 
     // Calculate the connectivity from each line.
     for (int i = stations; i < stations + lines; i++) {
+        if (graph[i].empty()) {
+            continue;
+        }
         int changes = metro_connectivity(i);
         if (changes == -1) {
             break;

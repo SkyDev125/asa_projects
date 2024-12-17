@@ -33,6 +33,7 @@
 *.gtest
 *.outme
 *.diff
+*.out
 *.debug
 *.app
 *.i*86
