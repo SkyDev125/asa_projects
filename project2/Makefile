@@ -69,6 +69,13 @@ test: clean $(TESTDIR) $(TEST_INPUTS) $(TEST_OUTPUTS) $(TARGET)
 	fi; \
 	echo "<================ $$PASSED_COUNT/$$(($$PASSED_COUNT + $$FAILED_COUNT)) tests - $$(expr $$PASSED_COUNT \* 100 \/ \( $$PASSED_COUNT + $$FAILED_COUNT \))% =================>"; \
 
+run_tests: $(TARGET)
+	for file in $(wildcard gen_tests/*.in); do \
+		base_name=$$(basename $$file .in); \
+		$$($(TARGET) < $$file > gen_tests/$${base_name}.out); \
+	done
+
+
 # Clean rule
 clean:
 	@rm -rf $(OUTDIR)
