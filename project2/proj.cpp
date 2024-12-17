@@ -165,9 +165,6 @@ int main() {
 
     // Calculate the connectivity from each line.
     for (int i = stations; i < stations + lines; i++) {
-        if(is_redundant_line(i)) {
-            continue;
-        }
         int changes = metro_connectivity(i);
         if (changes == -1) {
             break;
