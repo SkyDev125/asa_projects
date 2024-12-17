@@ -70,20 +70,19 @@ void print_queue(const vector<pair<int, int>> &queue) {
 }
 
 void remove_redundant_lines() {
+    // Go through all lines
     for (int i = stations; i < stations + lines; i++) {
-        bool redundant = false;
         for (int j = stations; j < stations + lines; j++) {
             if (i == j) continue;
+            
+            // Check if one is a subset of the other, if so remove it.
             if (includes(graph[j].begin(), graph[j].end(), graph[i].begin(), graph[i].end())) {
-                redundant = true;
+                for (auto &node : graph[i]) {
+                    graph[node].erase(i);
+                }
+                graph[i].clear();
                 break;
             }
-        }
-        if (redundant) {
-            for (auto &node : graph[i]) {
-                graph[node].erase(i);
-            }
-            graph[i].clear();
         }
     }
 }
