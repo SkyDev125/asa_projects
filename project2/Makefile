@@ -3,11 +3,13 @@ CURDIR := $(shell pwd)
 OUTDIR = $(CURDIR)/out
 REPORTDIR = $(CURDIR)/report
 TESTDIR = $(CURDIR)/tests
+STRESSDIR = $(CURDIR)/analysis_tests
 
 # Source Files
 SRC = $(wildcard $(CURDIR)/*.cpp)
 TEST_INPUTS = $(wildcard $(TESTDIR)/*.in)
 TEST_OUTPUTS = $(wildcard $(TESTDIR)/*.out)
+STRESS_INPUTS = $(wildcard $(STRESSDIR)/**/*.in)
 TOTAL_ERRORS = 
 
 # Targets
@@ -16,10 +18,11 @@ TARGET = $(OUTDIR)/$(FILENAME).out
 DEBUGTARGET = $(OUTDIR)/$(FILENAME).debug
 INPUT_FILE = $(CURDIR)/$(FILENAME).in
 TEST_OUT_EXT = .outme
+STRESSTEST_EXT = .analysis.json
 
 # Compiler and flags
 CC = g++
-CCLAGS = -std=c++11 -O3 -Wall -lm
+CCLAGS = -std=c++11 -O3 -Wall
 VALFLAGS = --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=$(REPORTDIR)/valgrind.log
 GPROFFLAGS = gmon.out -b -p -q -A > $(REPORTDIR)/gprof.log
 LIZFLAGS = -l cpp -Eduplicate -a 5 -C 10 -L 1000 -a 5 -E NS -t 4 -o $(REPORTDIR)/lizard.html
@@ -27,6 +30,9 @@ HYPERFLAGS = -N --command-name "Benchmark 1" --runs 100 2>/dev/null
 
 # Default rule
 all: $(TARGET)
+
+# interactive rule
+inter: $(TARGET) inter-valgrind inter-gprof lizard
 
 # Test rule
 test: clean $(TESTDIR) $(TEST_INPUTS) $(TEST_OUTPUTS) $(TARGET)
@@ -69,12 +75,10 @@ test: clean $(TESTDIR) $(TEST_INPUTS) $(TEST_OUTPUTS) $(TARGET)
 	fi; \
 	echo "<================ $$PASSED_COUNT/$$(($$PASSED_COUNT + $$FAILED_COUNT)) tests - $$(expr $$PASSED_COUNT \* 100 \/ \( $$PASSED_COUNT + $$FAILED_COUNT \))% =================>"; \
 
-run_tests: $(TARGET)
-	for file in $(wildcard gen_tests/*.in); do \
-		base_name=$$(basename $$file .in); \
-		$$($(TARGET) < $$file > gen_tests/$${base_name}.out); \
-	done
-
+stresstest: clean $(STRESSDIR) $(STRESS_INPUTS) $(TARGET)
+	@for file in $(STRESS_INPUTS); do \
+		hyperfine -N --command-name "Benchmarking $$file" --runs 10 --input $$file --export-json $${file%.in}$(STRESSTEST_EXT) $(TARGET); \
+		done; \
 
 # Clean rule
 clean:
@@ -82,6 +86,7 @@ clean:
 	@rm -rf $(REPORTDIR)
 	@rm -f $(TESTDIR)/*.outme
 	@rm -f $(TESTDIR)/*.diff
+	@rm -f $(STRESSDIR)/**/*$(STRESSTEST_EXT)
 
 # Ensure the tests directory exists
 $(TESTDIR):
@@ -123,9 +128,19 @@ $(DEBUGTARGET): $(OUTDIR)
 valgrind: $(TARGET) $(REPORTDIR)
 	@valgrind $(VALFLAGS) $(TARGET) < $(INPUT_FILE)
 
+# Run valgrind Interactive
+inter-valgrind: $(TARGET) $(REPORTDIR)
+	@valgrind $(VALFLAGS) $(TARGET)
+
 # Run gprof
 gprof: $(DEBUGTARGET) $(REPORTDIR)
 	$(DEBUGTARGET) < $(INPUT_FILE)
+	@gprof $(DEBUGTARGET) $(GPROFFLAGS)
+	@rm gmon.out
+
+# Run gprof Interactive
+inter-gprof: $(DEBUGTARGET) $(REPORTDIR)
+	$(DEBUGTARGET)
 	@gprof $(DEBUGTARGET) $(GPROFFLAGS)
 	@rm gmon.out
 
