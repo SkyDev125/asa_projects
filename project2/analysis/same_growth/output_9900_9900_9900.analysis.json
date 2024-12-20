@@ -1,0 +1,38 @@
+{
+  "results": [
+    {
+      "command": "Benchmarking /workspace/university/2nd_year/1st_sem/asa/asa_projects/project2/analysis_tests/same_growth/output_9900_9900_9900.in",
+      "mean": 5.0498318413,
+      "stddev": 0.0514346422850783,
+      "median": 5.033192244,
+      "user": 5.0413416,
+      "system": 0.0009995,
+      "min": 4.998479188,
+      "max": 5.165986652,
+      "times": [
+        5.000131316,
+        5.021517157,
+        5.101835715,
+        5.035241999,
+        5.165986652,
+        5.02053008,
+        5.06114963,
+        4.998479188,
+        5.062304187,
+        5.031142489
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

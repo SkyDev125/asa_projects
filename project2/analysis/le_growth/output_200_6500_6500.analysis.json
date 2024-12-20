@@ -1,0 +1,38 @@
+{
+  "results": [
+    {
+      "command": "Benchmarking /workspace/university/2nd_year/1st_sem/asa/asa_projects/project2/analysis_tests/le_growth/output_200_6500_6500.in",
+      "mean": 2.5030379732,
+      "stddev": 0.04579855273942599,
+      "median": 2.490391743,
+      "user": 2.4975246,
+      "system": 0.0,
+      "min": 2.469555199,
+      "max": 2.631637093,
+      "times": [
+        2.489511727,
+        2.49044566,
+        2.486790041,
+        2.490420913,
+        2.495439583,
+        2.497492226,
+        2.488724717,
+        2.490362573,
+        2.631637093,
+        2.469555199
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}
