@@ -19,23 +19,24 @@ def plot_theoretical_values(ax, x, T, Teo_F_N_M_L):
     return function_normalized
     
 # Read data from CSV file
-filename = 'spreadsheets/sequence_growth.csv'  # Replace with your CSV file name
+filename = 'spreadsheets/ve_growth.csv'  # Replace with your CSV file name
 data = pd.read_csv(filename)
 
 # Assuming the CSV has columns 'stations', 'connections', 'lines' and 'mean'
-N = data['firstnum'].values
-M = data['secondnum'].values
+N = data['stations'].values
+M = data['connections'].values
+L = data['lines'].values
 T = data['mean'].values
 
 # Start the graph
 fig, ax = plt.subplots()
 
-F_N_M_L = "N * M"
+F_N_M_L = "N * M * L"  # Replace with your function
 
 # Graph Properties
 ax.set_xlabel('F(N, M, L) = ' + F_N_M_L)
 ax.set_ylabel('T (Time mean)')
-ax.set_title('Time Complexity Analysis (N = 200, M & L Grows)')
+ax.set_title('Time Complexity Analysis (N & M Grows, L = 200)')
 ax.grid(True, which='both', linestyle='--', linewidth=0.5)
 
 # x-axis values
@@ -48,9 +49,9 @@ ax.set_ylim([min(T), max(T)])
 ax.plot(F_N_M_L, T, label='Measured Times')
 
 # Plot and calculate R² for theoretical values
-plot_theoretical_values(ax, F_N_M_L, T, "M")
-plot_theoretical_values(ax, F_N_M_L, T, "M**2")
-plot_theoretical_values(ax, F_N_M_L, T, "M**3")
+plot_theoretical_values(ax, F_N_M_L, T, "N")
+plot_theoretical_values(ax, F_N_M_L, T, "N**2")
+plot_theoretical_values(ax, F_N_M_L, T, "N**3")
 
 ax.legend()
 
