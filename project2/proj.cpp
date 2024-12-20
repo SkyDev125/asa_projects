@@ -1,14 +1,15 @@
+#include <algorithm>
 #include <climits>
 #include <iomanip>
 #include <iostream>
 #include <queue>
 #include <set>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 int stations, connections, lines;
 vector<set<int>> graph;
+vector<bool> deleted;
 
 // Helper function to center-align a string
 string center_align(const string &text, int width) {
@@ -59,7 +60,6 @@ void print_graph(const vector<set<int>> &graph) {
     cout << endl;
 }
 
-
 // Print the queue
 void print_queue(const vector<pair<int, int>> &queue) {
     cout << "Queue: ";
@@ -74,13 +74,11 @@ void remove_redundant_lines() {
     for (int i = stations; i < stations + lines; i++) {
         for (int j = stations; j < stations + lines; j++) {
             if (i == j) continue;
-            
+
             // Check if one is a subset of the other, if so remove it.
-            if (includes(graph[j].begin(), graph[j].end(), graph[i].begin(), graph[i].end())) {
-                for (auto &node : graph[i]) {
-                    graph[node].erase(i);
-                }
-                graph[i].clear();
+            if (includes(graph[j].begin(), graph[j].end(), graph[i].begin(),
+                         graph[i].end())) {
+                deleted[i] = true;
                 break;
             }
         }
@@ -90,21 +88,21 @@ void remove_redundant_lines() {
 int metro_connectivity(int starting_node) {
     int total_changes = 0;
     int total_nodes = stations;
-    vector<bool> visited(stations + lines, false);
+    vector<bool> visited(deleted);
     queue<pair<int, int>> queue;
 
     // Initialize the queue
     for (auto &node : graph[starting_node]) {
-        queue.emplace(node,0);  // (node, changes)
+        queue.emplace(node, 0);  // (node, changes)
     }
     visited[starting_node] = true;
 
     // Do the BFS
     while (!queue.empty()) {
-        if(total_nodes == 0) {
+        if (total_nodes == 0) {
             break;
         }
-        //print_queue(queue);
+        // print_queue(queue);
 
         pair<int, int> current = queue.front();
         queue.pop();
@@ -168,20 +166,19 @@ int main() {
         graph[l].insert(b);
     }
 
-    //print_graph(graph);
+    // print_graph(graph);
 
     // Remove redundant lines
+    deleted = vector<bool>(stations + lines, false);
     remove_redundant_lines();
 
-    //print_graph(graph);
+    // print_graph(graph);
 
     int max_changes = -1;
 
     // Calculate the connectivity from each line.
     for (int i = stations; i < stations + lines; i++) {
-        if (graph[i].empty()) {
-            continue;
-        }
+        if (deleted[i]) continue;
         int changes = metro_connectivity(i);
         if (changes == -1) {
             break;
