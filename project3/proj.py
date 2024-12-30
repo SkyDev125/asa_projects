@@ -8,6 +8,7 @@ class Country:
         self._max_export = export
         self._min_distribution = distribution
         self._factories = {}
+        self._children = []
 
     def max_export(self) -> int:
         return self._max_export
@@ -18,12 +19,17 @@ class Country:
     def factories(self) -> Dict[int, "Factory"]:
         return self._factories
 
+    def children(self) -> List[LpVariable]:
+        return self._children
+
     def __str__(self):
         return (
             "max_export: "
             + str(self.max_export())
             + ", min_distribution: "
             + str(self.min_distribution())
+            + ", children: "
+            + str([v.name for v in self.children()])
         )
 
 
@@ -100,6 +106,9 @@ for i in range(factories + countries + 1, factories + countries + children + 1):
         else:
             factories_list[int(factory_id) - 1].outer_orders().append(variable)
 
+    # Add children to the country
+    countries_list[int(country_id) - 1].children().extend(restriction)
+
     prob += (lpSum(restriction) <= 1, "Wishes of Child " + child_id)
     variables.extend(restriction)
 
@@ -128,13 +137,6 @@ for country_index, country in enumerate(countries_list):
         if len(factory.outer_orders()) > 0
     ]
 
-    # Collect inner order variables
-    inner_orders_list = [
-        lpSum(factory.inner_orders())
-        for factory in country.factories().values()
-        if len(factory.inner_orders()) > 0
-    ]
-
     # If there are any outer orders, add the "max export" constraint
     if outer_orders_list:
         prob += (
@@ -142,15 +144,13 @@ for country_index, country in enumerate(countries_list):
             "Max Export of Country {}".format(country_index + 1),
         )
 
-    # If there are any inner orders, add the "min distribution" constraint
-    if inner_orders_list:
-        prob += (
-            lpSum(inner_orders_list) >= country.min_distribution(),
-            "Min Distribution of Country {}".format(country_index + 1),
-        )
+    # Make sure at leas pmin children get a gift
+    prob += (
+        lpSum(country.children()) >= country.min_distribution(),
+        "Min Distribution of Country {}".format(country_index + 1),
+    )
 
-
-# # Print the Countries and Factories
+# Print the Countries and Factories
 # for country_index, country in enumerate(countries_list):
 #     print("================== Country " + str(country_index + 1) + "==================")
 #     print(country)
