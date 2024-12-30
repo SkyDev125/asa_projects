@@ -111,7 +111,7 @@ $(REPORTDIR):
 
 # Run lizard
 lizard: $(REPORTDIR)
-	@lizard $(LIZFLAGS) $(SRC)
+	@lizard $(SRC)
 
 # Phony rules
 .PHONY: all inter test clean lizard
