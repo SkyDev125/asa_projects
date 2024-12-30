@@ -3,7 +3,7 @@ CURDIR := $(shell pwd)
 OUTDIR = $(CURDIR)/out
 REPORTDIR = $(CURDIR)/report
 TESTDIR = $(CURDIR)/tests
-STRESSDIR = $(CURDIR)/analysis_tests
+STRESSDIR = $(CURDIR)/analysis
 
 # Source Files
 SRC = $(wildcard $(CURDIR)/*.py)
