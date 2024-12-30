@@ -1,4 +1,6 @@
 from pulp import *
+import sys
+from typing import List, Dict
 
 
 class Country:
@@ -105,22 +107,24 @@ del input, factories, countries, children
 
 # Add the restrictions for the Factory stocks
 for factory_index, factory in enumerate(factories_list):
-    prob += (
-        lpSum(
-            [
-                variables.get(str(child_id + 1) + str(factory_index + 1))
-                for child_id in factory.inner_orders()
-            ]
+    # Collect inner order variables
+    inner_orders_list = [
+        variables.get(str(child_id + 1) + str(factory_index + 1))
+        for child_id in factory.inner_orders()
+    ]
+
+    # Collect outer order variables
+    outer_orders_list = [
+        variables.get(str(child_id + 1) + str(factory_index + 1))
+        for child_id in factory.outer_orders()
+    ]
+
+    # If there are any orders, add the "max stock" constraint
+    if inner_orders_list or outer_orders_list:
+        prob += (
+            lpSum(inner_orders_list) + lpSum(outer_orders_list) <= factory.stock(),
+            "Max Stock of Factory " + str(factory_index + 1),
         )
-        + lpSum(
-            [
-                variables.get(str(child_id + 1) + str(factory_index + 1))
-                for child_id in factory.outer_orders()
-            ]
-        )
-        <= factory.stock(),
-        "Max Stock of Factory " + str(factory_index + 1),
-    )
 
 # Add the restrictions for the Country export and distribution
 for country_index, country in enumerate(countries_list):
@@ -155,11 +159,26 @@ for country_index, country in enumerate(countries_list):
 # Add the objective function
 prob += lpSum(variables), "Objective Function"
 
+# # Print the Countries and Factories
+# for country_index, country in enumerate(countries_list):
+#     print("================== Country " + str(country_index + 1) + "==================")
+#     print(country)
+#     for factory_index, factory in country.factories().items():
+#         print(
+#             "------------------ Factory "
+#             + str(factory_index + 1)
+#             + "------------------"
+#         )
+#         print(factory)
+#         print([child_id + 1 for child_id in factory.inner_orders()])
+#         print([child_id + 1 for child_id in factory.outer_orders()])
+
 # Remove the variables that are not used
 del variables, factories_list, countries_list
 
 # Solve the problem
-if prob.solve(PULP_CBC_CMD(msg=0)) == -1:
-    print("-1")
+prob.solve(GLPK(msg=0))
+if prob.status == pulp.const.LpSolutionOptimal:
+    print(value(prob.objective))
 else:
-    print(int(value(prob.objective)))
+    print("-1")
