@@ -9,6 +9,7 @@ class Country:
         self._min_distribution = distribution
         self._factories = {}
         self._children = []
+        self._children_count = 0
 
     def max_export(self) -> int:
         return self._max_export
@@ -30,6 +31,8 @@ class Country:
             + str(self.min_distribution())
             + ", children: "
             + str([v.name for v in self.children()])
+            + ", Children Count: "
+            + str(self._children_count)
         )
 
 
@@ -91,6 +94,11 @@ for i in range(factories + countries + 1, factories + countries + children + 1):
 
     for j in range(2, len(line)):
         factory_id = line[j]
+
+        # Skip if the factory has no stock
+        if factories_list[int(factory_id) - 1].stock() == 0:
+            continue
+
         # Create a variable id, factory, country for LP problem
         variable = LpVariable(
             f"x{child_id}_c{country_id}_f{factory_id}", 0, 1, cat="Binary"
@@ -120,6 +128,10 @@ del input, factories, countries, children, variables
 
 # Add the restrictions for the Factory stocks
 for factory_index, factory in enumerate(factories_list):
+    # Skip if the factory has no stock
+    if factory.stock() == 0:
+        continue
+
     # If there are any orders, add the "max stock" constraint
     if (len(factory.outer_orders()) + len(factory.inner_orders())) > 0:
         prob += (
